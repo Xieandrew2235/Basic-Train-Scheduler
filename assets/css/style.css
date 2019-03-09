@@ -20,13 +20,19 @@ body {
 
 .h3, h3 {
     text-align: center;
+    font-family: 'Major Mono Display', monospace;
 }
 
 .panel-body {
-    background: #27251F;
+    background: rgb(51, 50, 47);
     color: #fd5a1e;
+    font-family: 'Major Mono Display', monospace;
 }
 
 .panel-heading {
     background: #27251F;
+}
+
+.jumbotron .h1, .jumbotron h1 {
+    font-family: 'Alfa Slab One', cursive;
 }
