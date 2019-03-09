@@ -17,7 +17,7 @@ $(document).ready(function(){
     var destination;
     var firstTrain;
     var frequency = 0;
-
+    //   On click function and event.preventDefault so that the page doesn't refresh
     $("#add-train").on("click", function() {
         event.preventDefault();
         // Storing and retreiving new train data
@@ -26,7 +26,7 @@ $(document).ready(function(){
         firstTrain = $("#first-train").val().trim();
         frequency = $("#frequency").val().trim();
 
-        // Pushing to firebase
+        // Pushing user input thats collected to firebase
         database.ref().push({
             name: name,
             destination: destination,
@@ -50,6 +50,7 @@ $(document).ready(function(){
         var nextTrain = moment().add(minAway, "minutes");
         nextTrain = moment(nextTrain).format("hh:mm");
 
+        // For each time the user inputs data and submits, it will append and sit on top of the previous entry
         $("#add-row").append("<tr><td>" + childSnapshot.val().name +
                 "</td><td>" + childSnapshot.val().destination +
                 "</td><td>" + childSnapshot.val().frequency +
