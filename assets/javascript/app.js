@@ -1,26 +1,24 @@
-// Initializing firebase
+$(document).ready(function(){
+    var config = {
+        apiKey: "AIzaSyDoAmvX4x2ocfIDlZE4bN5DBi7m_KCm9gM",
+        authDomain: "ucbehomework.firebaseapp.com",
+        databaseURL: "https://ucbehomework.firebaseio.com",
+        projectId: "ucbehomework",
+        storageBucket: "ucbehomework.appspot.com",
+        messagingSenderId: "307311357520"
+      };
+      firebase.initializeApp(config);
 
-var config = {
-    apiKey: "AIzaSyCND6M1D2Yu7cgxaLtKsHlDIwDh8iFUjAM",
-    authDomain: "train123-d9e53.firebaseapp.com",
-    databaseURL: "https://train123-d9e53.firebaseio.com",
-    projectId: "train123-d9e53",
-    storageBucket: "train123-d9e53.appspot.com",
-    messagingSenderId: "803859808594"
-};
-firebase.initializeApp(config);
-
-
-$(function () {
-    // Creating a variable to reference the database
+    // A variable to reference the database.
     var database = firebase.database();
-    // Local variables
-    var name = '';
-    var destination = '';
-    var firstTrain = '';
+
+    // Variables for the onClick event
+    var name;
+    var destination;
+    var firstTrain;
     var frequency = 0;
 
-    $("#add-train").on("click", function () {
+    $("#add-train").on("click", function() {
         event.preventDefault();
         // Storing and retreiving new train data
         name = $("#train-name").val().trim();
@@ -28,7 +26,7 @@ $(function () {
         firstTrain = $("#first-train").val().trim();
         frequency = $("#frequency").val().trim();
 
-        // Pushing data collected from variables to database
+        // Pushing to firebase
         database.ref().push({
             name: name,
             destination: destination,
@@ -36,28 +34,38 @@ $(function () {
             frequency: frequency,
             dateAdded: firebase.database.ServerValue.TIMESTAMP
         });
+        $("form")[0].reset();
+    });
 
-        database.ref().on("child_added", function (childSnapshot) {
-            var nextArr;
-            var minAway;
-            // Chang year so first train comes before now
-            var firstTrainNew = moment(childSnapshot.val().firstTrain, "hh:mm").subtract(1, "years");
-            // Difference between the current and firstTrain
-            var diffTime = moment().diff(moment(firstTrainNew), "minutes");
-            var remainder = diffTime % childSnapshot.val().frequency;
-            // Minutes until next train
-            var minAway = childSnapshot.val().frequency - remainder;
-            // Next train time
-            var nextTrain = moment().add(minAway, "minutes");
-        })
-        database.ref().on("child_added", function (snapshot) {
-            var sv = snapshot.val();
-            $("#add-Row").append("<tr><td scope='col')>" + sv.name + "</td>" +
-                "<td scope='col'>" + sv.destination + "</td>" +
-                "<td scope='col'>" + sv.firstTrain + "</td>" +
-                "<td scope='col'>" + sv.frequency + "</td> ></tr>");
+    database.ref().on("child_added", function(childSnapshot) {
+        var nextArr;
+        var minAway;
+        var firstTrainNew = moment(childSnapshot.val().firstTrain, "hh:mm").subtract(1, "years");
+        // Difference between the current and firstTrain
+        var diffTime = moment().diff(moment(firstTrainNew), "minutes");
+        var remainder = diffTime % childSnapshot.val().frequency;
+        // Minutes until next train
+        var minAway = childSnapshot.val().frequency - remainder;
+        // Next train time
+        var nextTrain = moment().add(minAway, "minutes");
+        nextTrain = moment(nextTrain).format("hh:mm");
 
-        });
+        $("#add-row").append("<tr><td>" + childSnapshot.val().name +
+                "</td><td>" + childSnapshot.val().destination +
+                "</td><td>" + childSnapshot.val().frequency +
+                "</td><td>" + nextTrain + 
+                "</td><td>" + minAway + "</td></tr>");
 
-    })
+            // Console log my errors (very useful!!!!)
+        }, function(errorObject) {
+            console.log("Errors handled: " + errorObject.code);
+    });
+
+    database.ref().orderByChild("dateAdded").limitToLast(1).on("child_added", function(snapshot) {
+        // Change the HTML to reflect
+        $("#train-name-display").html(snapshot.val().name);
+        $("#destination-display").html(snapshot.val().email);
+        $("#first-train-display").html(snapshot.val().age);
+        $("#frequency").html(snapshot.val().comment);
+    });
 });
