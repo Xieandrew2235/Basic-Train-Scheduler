@@ -15,7 +15,10 @@ body {
 }
 
 .text-center {
-    background: #27251F;
+    background-color: #27251F;
+    background-image: url("../images/thomas.jpg");
+    background-size: cover;
+    background-position: left;
 }
 
 .h3, h3 {
@@ -34,5 +37,9 @@ body {
 }
 
 .jumbotron .h1, .jumbotron h1 {
-    font-family: 'Alfa Slab One', cursive;
+    font-family: 'Major Mono Display', monospace;
+}
+
+h1 {
+    font-weight: bolder;
 }
